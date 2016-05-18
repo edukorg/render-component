@@ -20,9 +20,18 @@ Or install it yourself as:
 
     $ gem install render-component
 
-## Usage
+Add in your file environment the endpoint to fetch component.
 
-TODO: Write usage instructions here
+```ruby
+Render::Component.configuration.endpoint='http://yourendpoint.here'
+```
+
+## Usage
+To get component use the helper `render_component`. For example:
+
+```
+<%= render_component('site-nav') %>
+```
 
 ## Development
 
