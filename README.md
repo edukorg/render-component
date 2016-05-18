@@ -27,10 +27,10 @@ Render::Component.configuration.endpoint='http://yourendpoint.here'
 ```
 
 ## Usage
-To get component use the helper `render_component`. For example:
+To get component, use the helper `render_component`. For example:
 
 ```
-<%= render_component('site-nav') %>
+<%= render_component('site-nav', '{"some": "attribute"}') %>
 ```
 
 ## Development

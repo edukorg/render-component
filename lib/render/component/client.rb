@@ -3,17 +3,21 @@ require 'net/http'
 
 class Render::Component::Client
 
-  def obtain_component(component)
-    execute_request(component)
+  def obtain_component(component, attributes)
+    execute_request(component, attributes)
   end
 
   private
 
-  def execute_request(component)
+  def execute_request(component, attributes)
     uri = URI("#{default_endpoint}/#{component}")
 
     response = Net::HTTP.start(uri.host, uri.port) do |http|
-      http.request(Net::HTTP::Post.new(uri.path))
+      request = Net::HTTP::Post.new(uri.path)
+      request.content_type = 'application/json'
+      request.body = attributes
+
+      http.request(request)
     end
 
     return response.body if response.code_type == Net::HTTPOK
