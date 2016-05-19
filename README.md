@@ -23,7 +23,11 @@ Or install it yourself as:
 Add in your file environment the endpoint to fetch component.
 
 ```ruby
-Render::Component.configuration.endpoint='http://yourendpoint.here'
+Render::Component.configuration.endpoint='http://render.component.here'
+```
+
+```ruby
+Render::Component.configuration.base_path='http://your.app.base.path'
 ```
 
 ## Usage

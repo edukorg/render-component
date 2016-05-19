@@ -15,7 +15,7 @@ class Render::Component::Client
     response = Net::HTTP.start(uri.host, uri.port) do |http|
       request = Net::HTTP::Post.new(uri.path)
       request.content_type = 'application/json'
-      request.body = attributes
+      request.body = apply_default_attributes(attributes)
 
       http.request(request)
     end
@@ -25,13 +25,25 @@ class Render::Component::Client
     raise StandardError.new, "Request Error. Uri: #{uri}, Response Code Type: #{response.code_type}, Response Code: #{response.code}"
   end
 
+  def apply_default_attributes(attributes)
+    body = JSON.parse(attributes)
+    body['base_path'] = default_base_path
+    JSON.generate(body)
+  end
+
+  def default_base_path
+    base_path = Render::Component.configuration.base_path
+    raise Render::Component::Error.new, configuration_error_message(__method__, 'base_path') if base_path.nil?
+    base_path
+  end
+
   def default_endpoint
     endpoint = Render::Component.configuration.endpoint
-    raise Render::Component::Error.new, error_message if endpoint.nil?
+    raise Render::Component::Error.new, configuration_error_message(__method__, 'endpoint') if endpoint.nil?
     endpoint
   end
 
-  def error_message
-    'To use `obtain_component` you must add default endpoint. e.g. Render::Component.configuration.endpoint='
+  def configuration_error_message(method, attribute)
+    "To use `#{method}` you must add default #{attribute}. e.g. Render::Component.configuration.#{attribute}="
   end
 end
