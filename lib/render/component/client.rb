@@ -12,7 +12,7 @@ class Render::Component::Client
   def execute_request(component, attributes)
     uri = URI("#{default_endpoint}/#{component}")
 
-    response = Net::HTTP.start(uri.host, uri.port) do |http|
+    response = Net::HTTP.start(uri.host, uri.port, read_timeout: 3) do |http|
       request = Net::HTTP::Post.new(uri.path)
       request.content_type = 'application/json'
       request.body = apply_default_attributes(attributes)
