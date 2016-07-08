@@ -24,8 +24,8 @@ describe Render::Component::Client do
     context 'when request get success' do
       let(:body_response) { '<body><h1>barz</h1></body>' }
       it 'should return the response body' do
-        stub_request(:post, url('component'))
-          .with(body: '{"base_path":"http://eduk.com.br"}')
+        stub_request(:get, url('component'))
+          .with(headers: {"X-Content": '{"base_path":"http://eduk.com.br"}'})
           .to_return(body: body_response)
 
         expect(subject.send(:execute_request, 'component', '{}')).to eql(body_response)
@@ -34,8 +34,8 @@ describe Render::Component::Client do
 
     context 'when request get error' do
       it 'should raise error' do
-        stub_request(:post, url('component'))
-          .with(body: '{"base_path":"http://eduk.com.br"}')
+        stub_request(:get, url('component'))
+          .with(headers: {"X-Content": '{"base_path":"http://eduk.com.br"}'})
           .to_return(status: 404)
         expect { subject.send(:execute_request, 'component', '{}') }.to raise_error(StandardError, /Request Error. URL:.*?, Response Status Code: 404/)
       end
