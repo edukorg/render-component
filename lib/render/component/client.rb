@@ -1,5 +1,5 @@
 require 'json'
-require 'net/http'
+require 'curb'
 
 class Render::Component::Client
 
@@ -10,19 +10,18 @@ class Render::Component::Client
   private
 
   def execute_request(component, attributes)
-    uri = URI("#{default_endpoint}/#{component}")
 
-    response = Net::HTTP.start(uri.host, uri.port, read_timeout: 3) do |http|
-      request = Net::HTTP::Post.new(uri.path)
-      request.content_type = 'application/json'
-      request.body = apply_default_attributes(attributes)
+    url = "#{default_endpoint}/#{component}"
 
-      http.request(request)
+    response = Curl.post(url, apply_default_attributes(attributes)) do |curl|
+      curl.connect_timeout = 3
     end
 
-    return response.body if response.code_type == Net::HTTPOK
+    code = response.status.to_i
 
-    raise StandardError.new, "Request Error. Uri: #{uri}, Response Code Type: #{response.code_type}, Response Code: #{response.code}"
+    return response.body_str if code == 200
+
+    raise StandardError.new, "Request Error. URL: #{url}, Response Status Code: #{code}"
   end
 
   def apply_default_attributes(attributes)

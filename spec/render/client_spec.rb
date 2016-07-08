@@ -1,10 +1,14 @@
 require 'spec_helper'
 
+def url(component)
+  "#{subject.send(:default_endpoint)}/#{component}"
+end
+
 describe Render::Component::Client do
 
   subject { Render::Component::Client.new }
 
-before(:each) do
+  before(:each) do
     Render::Component.configuration.endpoint = 'http://render.component.eduk.com.br'
     Render::Component.configuration.base_path = 'http://eduk.com.br'
   end
@@ -18,18 +22,22 @@ before(:each) do
 
   describe '#execute_request' do
     context 'when request get success' do
+      let(:body_response) { '<body><h1>barz</h1></body>' }
       it 'should return the response body' do
-        obj = double('Net', code_type: Net::HTTPOK, body: '<body><h1>barz</h1></body>')
-        allow(Net::HTTP).to receive(:start).and_return(obj)
-        expect(subject.send(:execute_request, 'component', '{}')).to eql(obj.body)
+        stub_request(:post, url('component'))
+          .with(body: '{"base_path":"http://eduk.com.br"}')
+          .to_return(body: body_response)
+
+        expect(subject.send(:execute_request, 'component', '{}')).to eql(body_response)
       end
     end
 
     context 'when request get error' do
       it 'should raise error' do
-        obj = double('Net', code_type: Net::HTTPFound)
-        allow(Net::HTTP).to receive(:start).and_raise('Request errror')
-        expect { subject.send(:execute_request, 'component', '{}') }.to raise_error('Request errror')
+        stub_request(:post, url('component'))
+          .with(body: '{"base_path":"http://eduk.com.br"}')
+          .to_return(status: 404)
+        expect { subject.send(:execute_request, 'component', '{}') }.to raise_error(StandardError, /Request Error. URL:.*?, Response Status Code: 404/)
       end
     end
   end
