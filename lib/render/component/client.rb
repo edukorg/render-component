@@ -13,7 +13,8 @@ class Render::Component::Client
 
     url = "#{default_endpoint}/#{component}"
 
-    response = Curl.post(url, apply_default_attributes(attributes)) do |curl|
+    response = Curl.get(url) do |curl|
+      curl.headers['X-Content'] = apply_default_attributes(attributes)
       curl.connect_timeout = 3
     end
 
