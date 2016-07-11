@@ -26,9 +26,9 @@ class Render::Component::Client
   end
 
   def apply_default_attributes(attributes)
-    body = JSON.parse(attributes)
-    body['base_path'] = default_base_path
-    JSON.generate(body)
+    attributes = JSON.parse(attributes) unless attributes.is_a?(Hash)
+    attributes['base_path'] = default_base_path
+    JSON.generate(attributes)
   end
 
   def default_base_path

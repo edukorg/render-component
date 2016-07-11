@@ -30,6 +30,14 @@ describe Render::Component::Client do
 
         expect(subject.send(:execute_request, 'component', '{}')).to eql(body_response)
       end
+
+      it 'should return the response body when attribute is a Hash' do
+        stub_request(:get, url('component'))
+          .with(headers: {"X-Content": '{"base_path":"http://eduk.com.br"}'})
+          .to_return(body: body_response)
+
+        expect(subject.send(:execute_request, 'component', {})).to eql(body_response)
+      end
     end
 
     context 'when request get error' do
